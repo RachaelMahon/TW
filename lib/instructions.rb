@@ -1,7 +1,7 @@
 class Instructions
 
   attr_reader :plateau_params, :rover_spawn_params, :rover_instructions,
-              :load_instructions_from_file, :instructions_array
+              :load_instructions_from_file, :instructions_array, :array_of_instructions_arrays
 
   def initialize(file)
     @load_instructions_from_file = File.read(file)
