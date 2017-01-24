@@ -2,13 +2,16 @@ class Rover
 
   CARDINAL_POINTS = ["N","E","S","W"]
 
-  attr_accessor :x_position, :y_position, :orientation, :status, :collided
+  attr_accessor :x_position, :y_position, :orientation, :status,
+                :moved
 
-  def initialize(x, y, orientation)
+  def initialize(id, x, y, orientation)
+    @id = id
     @x_position = x
     @y_position = y
     @orientation = orientation
     @status = "Not lost"
+    @moved = false
   end
 
   def apply_input_to_rover(letter)
@@ -46,8 +49,8 @@ class Rover
     @status = "Lost"
   end
 
-  def set_collision_status
-    @collided = "Collided"
+  def set_moved_status
+    @moved = true
   end
 
 end

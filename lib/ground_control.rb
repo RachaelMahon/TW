@@ -4,15 +4,18 @@ require_relative './instructions'
 
 class Ground_Control
 
-  attr_accessor :rover_a, :rover_b, :plateau, :instructions, :rover_a_instructions
+  attr_accessor :rover_a, :rover_b, :plateau, :instructions, :rover_a_instructions,
+                :current_rovers
 
 # Begin mission by creating resources
 
   def create_mission_resources
     get_instructions
-    land_rovers
     map_plateau
+    land_rovers
   end
+
+# Methods for creating resources
 
   def get_instructions
     @instructions = Instructions.new
@@ -21,31 +24,42 @@ class Ground_Control
 
   def map_plateau
     @plateau = Plateau.new(*@instructions.plateau_params)
+    puts "Your plateau is #{@plateau.max_x} units wide and #{@plateau.max_y} long"
   end
 
   def land_rovers
-    @rover_a = Rover.new(*@instructions.rover_a_params)
-    @rover_b = Rover.new(*@instructions.rover_b_params)
+    @current_rovers = []
+    i = 1
+    @instructions.rover_spawn_params.each do |params_array|
+      new_rover = Rover.new(i,*params_array)
+      @current_rovers << new_rover
+      puts "Rover with id #{i} landed at #{params_array}"
+      i = i + 1
+    end
   end
 
   # Handling input
 
-  def send_instructions_to_rover(rover, instructions)
+  def navigate_rovers
+    @current_rovers.each_with_index do |rover, index|
+      next if rover.moved == true
+      send_instructions_to_rover(rover, @instructions.rover_instructions[index], index + 1)
+    end
+  end
+
+  def send_instructions_to_rover(rover, instructions, number)
     instructions.each do |letter|
       rover_lost(rover)
-      rover_collision_checker(rover)
       if rover.status == "Lost"
-        puts "Your rover has fallen off the plateau - it was last seen at #{rover.declare_position_and_orientation}"
+        puts "Your rover number #{number} has fallen off the plateau - it was last seen at #{rover.declare_position_and_orientation}"
         break
-      elsif rover.collided == "Collided"
-        puts "Your rovers have collided at #{rover.declare_position_and_orientation}"
-        exit
       else
         rover.apply_input_to_rover(letter)
-        puts "Your rover is at #{rover.declare_position_and_orientation}"
+        puts "Your rover number #{number} is at #{rover.declare_position_and_orientation}"
         sleep(0.1)
       end
     end
+    rover.set_moved_status
   end
 
   # Handling edge cases
@@ -58,10 +72,4 @@ class Ground_Control
     end
   end
 
-  def rover_collision_checker(rover)
-    if @rover_a.x_position == @rover_b.x_position && @rover_a.y_position == @rover_b.y_position
-      rover.set_collision_status
-    end
-  end
-  
 end

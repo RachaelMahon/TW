@@ -1,69 +1,105 @@
 class Instructions
 
-  attr_reader :plateau_params,:rover_a_params, :rover_b_params,
-                :rover_a_instructions, :rover_b_instructions,
-                :instructions_array, :instructions
+  attr_reader :plateau_params, :rover_spawn_params, :rover_instructions
 
   def initialize
     @instructions = File.read('./lib/instructions.txt')
-    @formatted_instructions_array = []
   end
+
+  # Method to undertake all work carried out by Instructions class
+  # required to inform the rest of the program
 
   def create_parameters_from_input
-    split_input
+    process_instructions
+    separate_plateau_from_rovers
+    create_rover_spawn_and_instructions_arrays
+  end
+
+  # Preliminary processing of instructions to work with
+
+  def process_instructions
+    instructions_to_array
+    remove_spaces
     strip_last_paragraph
-    assign_parameters_from_input
   end
 
-  def split_input
-    @instructions_array = @instructions.split(/\n\n/)
+  # Creating the plateau parameters instance variable and separating
+  # it from the details that the rovers needs to know
+
+  def separate_plateau_from_rovers
+    get_plateau_parameter
+    remove_plateau_details_from_array
   end
 
-  def strip_last_paragraph
-    last_line = @instructions_array.pop
-    last_line.gsub!("\n","")
-    @instructions_array.push(last_line)
+  # Format the spawn coordinates and directions for the rovers before
+  # splitting
+
+  def create_rover_spawn_and_instructions_arrays
+    format_instructions
+    create_arrays_of_parameters_and_instructions
   end
 
-  def format_plateau_coordinates(string)
-    formatted = string.split(" ")
-    x = formatted[0].to_i
-    y = formatted[1].to_i
-    [x, y]
-  end
+  # Process instructions methods
 
-  def format_rover_coordinates(string)
-    formatted = string.split(" ")
-    x = formatted[0].to_i
-    y = formatted[1].to_i
-    z = formatted[2].to_s
-    [x, y, z]
-  end
+    def instructions_to_array
+      @instructions_array = @instructions.split(/\n\n/)
+    end
 
-  def format_rover_direction(string)
-    formatted = string.split("")
-  end
+    def strip_last_paragraph
+      last_line = @instructions_array.pop
+      last_line.gsub!("\n","")
+      @instructions_array.push(last_line)
+    end
 
-  def assign_parameters_from_input
-    @plateau_params = format_plateau_coordinates(@instructions_array[0])
-    @rover_a_params = format_rover_coordinates(@instructions_array[1])
-    @rover_a_instructions = format_rover_direction(@instructions_array[2])
-    @rover_b_params = format_rover_coordinates(@instructions_array[3])
-    @rover_b_instructions = format_rover_direction(@instructions_array[4])
+    def remove_spaces
+      @instructions_array.each do |element|
+        element.gsub!(" ","")
+      end
+    end
+
+    # Separate plateau from rover
+
+    def get_plateau_parameter
+      @plateau_params = @instructions_array[0].split("").map(&:to_i)
+    end
+
+    def remove_plateau_details_from_array
+      @instructions_array.shift
+    end
+
+# Create rover spawn & instructions arrays methods
+  def format_instructions
+    @array_of_instructions_arrays = []
+    @instructions_array.each do |element|
+      element_to_array = format_loop(element)
+      @array_of_instructions_arrays << element_to_array
+    end
   end
 
   def format_loop(string)
     new_array = []
     string_to_array = string.split("")
-    new_array.each do |character|
+    string_to_array.each do |character|
       if character =~ /[[:alpha:]]/
         new_character = character.to_s
+        new_array << new_character
       elsif character =~ /[[:digit:]]/
         new_character = character.to_i
-      end
         new_array << new_character
       end
-    @formatted_instructions_array << new_array
+    end
+    new_array
   end
 
+  def create_arrays_of_parameters_and_instructions
+    @rover_spawn_params = []
+    @rover_instructions = []
+    @array_of_instructions_arrays.each_with_index do |element, index|
+      if index % 2 == 0
+        @rover_spawn_params << element
+      elsif index % 2 != 0
+        @rover_instructions << element
+      end
+    end
+  end
 end
