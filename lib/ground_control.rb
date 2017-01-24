@@ -4,8 +4,7 @@ require_relative './instructions'
 
 class Ground_Control
 
-  attr_accessor :rover_a, :rover_b, :plateau, :instructions, :rover_a_instructions,
-                :current_rovers
+  attr_accessor :plateau, :instructions, :current_rovers
 
 # Begin mission by creating resources
 
