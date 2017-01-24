@@ -3,7 +3,7 @@ class Rover
   CARDINAL_POINTS = ["N","E","S","W"]
 
   attr_accessor :x_position, :y_position, :orientation, :status,
-                :moved
+                :moved, :id
 
   def initialize(id, x, y, orientation)
     @id = id

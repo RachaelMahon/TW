@@ -1,9 +1,10 @@
 class Instructions
 
-  attr_reader :plateau_params, :rover_spawn_params, :rover_instructions
+  attr_reader :plateau_params, :rover_spawn_params, :rover_instructions,
+              :load_instructions_from_file, :instructions_array
 
-  def initialize
-    @instructions = File.read('./lib/instructions.txt')
+  def initialize(file)
+    @load_instructions_from_file = File.read(file)
   end
 
   # Method to undertake all work carried out by Instructions class
@@ -42,7 +43,7 @@ class Instructions
   # Process instructions methods
 
     def instructions_to_array
-      @instructions_array = @instructions.split(/\n\n/)
+      @instructions_array = @load_instructions_from_file.split(/\n\n/)
     end
 
     def strip_last_paragraph

@@ -16,6 +16,10 @@ Intended for code to be readable at a glance rather than elegant in some places 
 
 Further Development
 
+I would change the programs start point so that a file could be handed in rather than hardcoded file name
+
+Make the program extendable for multiple plateaus
+
 I would add further prompts in Rover_Mission.rb so that the
 user can continue controlling the rover in the terminal, not
 just through the Instructions.txt as a one time thing

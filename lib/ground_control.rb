@@ -18,7 +18,7 @@ class Ground_Control
 # Methods for creating resources
 
   def get_instructions
-    @instructions = Instructions.new
+    @instructions = Instructions.new('./lib/instructions.txt')
     @instructions.create_parameters_from_input
   end
 
@@ -55,7 +55,7 @@ class Ground_Control
         break
       else
         rover.apply_input_to_rover(letter)
-        puts "Your rover number #{number} is at #{rover.declare_position_and_orientation}"
+        puts "Your rover number #{number} is at #{rover.declare_position_and_orientation} - it took a picture"
         sleep(0.1)
       end
     end
